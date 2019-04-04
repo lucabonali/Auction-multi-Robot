@@ -11,6 +11,8 @@ class MiniSumRoutingAgent(RoutingAgent):
 
     def computeBid(self):
         self.newRPC = len(self.path.path[self.path.trackCounter])
+        self.oldRPC = self.calculateOldRPC()
+        #print("\n\n\nI AM ROBOT", self.unique_id,"My values are ", self.newRPC, self.oldRPC)
         value = self.newRPC - self.oldRPC
         target = self.path.path[self.path.trackCounter][-1]
         self.bid = Bid(self,value,target)
@@ -20,5 +22,11 @@ class MiniSumRoutingAgent(RoutingAgent):
     def updateAllocation(self):
         self.agentNode = self.path.path[self.path.trackCounter][-1]
         self.path.trackCounter = self.path.trackCounter + 1
+
+    def calculateOldRPC(self):
+        try:
+            return len(self.path.path[-2])
+        except:
+            return 0
 
 

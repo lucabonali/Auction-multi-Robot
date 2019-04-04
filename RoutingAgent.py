@@ -26,17 +26,21 @@ class RoutingAgent(Agent):
         self.winnerComputed = False
         self.toDelete = True
 
+    def resetState(self):
+        self.bid = None
+        self.bidList.clear()
+
     def printState(self):
         print("\n\n&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n"
               "I am Agent:", self.unique_id, "My bid is", self.bid, "my targets are:", self.targets,"My bidList is", self.bidList,
+              "My path is", self.path.printPath(),
               "\n&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n\n")
 
     def step(self):
-        print("I am robot ",self.unique_id,"And my path is",self.path.path)
+        #print("I am robot ",self.unique_id,"And my path is",self.path.path)
         self.bid = None
         self.toDelete = True
         self.deleteOldBids()
-        self.printState()
         self.computeNearTargetPath()
 
     def deleteOldBids(self):
@@ -54,29 +58,29 @@ class RoutingAgent(Agent):
     def computeNearTargetPath(self):
         self.winnerComputed = False
         self.constructTree()
-        print("I am agent ", self.unique_id, "and my path is", self.path.printPath())
+        #print("I am agent ", self.unique_id, "and my path is", self.path.printPath())
         if self.bid == None:
             self.computeBid()
-            print("My bid is:", self.bid.toString())
+            #print("My bid is:", self.bid.toString())
             self.broadCastBid()
             if len(self.bidList) == len(self.otherRobots):
                 self.computeRoundWinner()
-        else:
-            print("I am agent ", self.unique_id, "and my Bid is", self.bid.toString())
+
+        #print("I am agent ", self.unique_id, "and my Bid is", self.bid.toString())
 
     def broadCastBid(self):
         for i in self.otherRobots:
             if not self.bid == None:
-                print("I am robot", self.unique_id, "Sending Bid to ", i.unique_id, "BID:", self.bid.toString())
+                #print("I am robot", self.unique_id, "Sending Bid to ", i.unique_id, "BID:", self.bid.toString())
                 i.receiveBid(self.bid)
 
 
     def receiveBid(self, bid):
         self.bidList.append(bid)
         if not self.bid == None:
-            print("I am robot", self.unique_id, "receiving Bid from ", bid.bidder.unique_id, "BID:", bid.toString())
+            #print("I am robot", self.unique_id, "receiving Bid from ", bid.bidder.unique_id, "BID:", bid.toString())
             if len(self.bidList) == len(self.otherRobots):
-                print("I am robot", self.unique_id, "ready to compute the winner ", "my bidlist is:", self.bidList)
+                #print("I am robot", self.unique_id, "ready to compute the winner ", "my bidlist is:", self.bidList)
                 self.computeRoundWinner()
 
 
@@ -89,7 +93,7 @@ class RoutingAgent(Agent):
                 if i.value < winningBid:
                     winningBid = i.value
                     winningAgent = i.bidder
-            print("I am robot", self.unique_id, "Winner bid: ", winningBid, "Winner agent:", winningAgent.unique_id)
+            #print("I am robot", self.unique_id, "Winner bid: ", winningBid, "Winner agent:", winningAgent.unique_id)
             self.winnerComputed = True
             self.updateWinner(winningAgent)
             self.bidList.clear()
@@ -97,7 +101,7 @@ class RoutingAgent(Agent):
 
     def checkWin(self, winningAgent):
         if self == winningAgent:
-            print("WINNING AGENT:", winningAgent)
+            #print("WINNING AGENT:", winningAgent)
             self.updateAllocation()
             x = self.bid.targetNode.xCoord
             y = self.bid.targetNode.yCoord
@@ -107,13 +111,12 @@ class RoutingAgent(Agent):
             drawer = Drawer(self.model.schedule.agents)
             drawer.printMap(self.mapChar)
         else:
-            self.printState()
-            print("")
+            #self.printState()
             self.deletePath()
 
     def updateWinner(self, winningAgent):
         for i in self.otherRobots:
-            print("I am robot", self.unique_id, "I am sending the winner! ", winningAgent.unique_id, "To agent", i.unique_id)
+            #print("I am robot", self.unique_id, "I am sending the winner! ", winningAgent.unique_id, "To agent", i.unique_id)
             i.receiveWinner(winningAgent)
 
     def receiveWinner(self,winningAgent):
@@ -124,7 +127,7 @@ class RoutingAgent(Agent):
 
     def deletePath(self):
         if self.toDelete:
-            print("I am robot ", self.unique_id, "And i am deleting my path", self.path.path)
+            #print("I am robot ", self.unique_id, "And i am deleting my path", self.path.path)
             self.path.path.pop(-1)
         self.toDelete = False
 
