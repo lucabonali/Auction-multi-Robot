@@ -7,7 +7,7 @@ def startRouting(path):
     auction = Auction(path)
 
     for i in range(len(mapp.targetPos)):
-        print(i, "^ STEP////////////////////////////////////////////")
+        print("\n\n",i, "^ STEP////////////////////////////////////////////\n\n")
         auction.step()
         #print("\n\nSTATE OF AGENTS AT THE END OF ROUND ", i ,"\n\n\n")
         for j in auction.schedule.agents:
