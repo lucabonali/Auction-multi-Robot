@@ -1,3 +1,5 @@
+import random
+
 from colorama import Fore
 
 
@@ -63,7 +65,12 @@ class Drawer():
                         xCoord = j[k].xCoord
                         yCoord = j[k].yCoord
                         mapChar[xCoord][yCoord] = self.colorList[i.unique_id] + "*" + Fore.WHITE
-
+                        #FUNKY VERSION
+                        #mapChar[xCoord][yCoord] = self.colorList[random.randint(1,len(self.colorList)-1)] + "*" + self.colorList[random.randint(1,len(self.colorList)-1)]#Fore.WHITE
+                        #MR STARK VERSION
+                        #mapChar[xCoord][yCoord] = self.colorList[i.unique_id] + "\t\t" + Fore.WHITE
+                        #HEARTS
+                        #mapChar[xCoord][yCoord] = self.colorList[i.unique_id] + "<3" + Fore.WHITE
 
     def printMap(self, mapChar):
         self.colorPaths(mapChar)
