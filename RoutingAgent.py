@@ -23,12 +23,36 @@ class RoutingAgent(Agent):
         self.bidList = []
         self.otherRobots = []
         self.readyRobot = []
+        self.winnerComputed = False
+        self.toDelete = True
+
+    def printState(self):
+        print("\n\n&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n"
+              "I am Agent:", self.unique_id, "My bid is", self.bid, "my targets are:", self.targets,"My bidList is", self.bidList,
+              "\n&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n\n")
 
     def step(self):
+        print("I am robot ",self.unique_id,"And my path is",self.path.path)
+        self.bid = None
+        self.toDelete = True
+        self.deleteOldBids()
+        self.printState()
         self.computeNearTargetPath()
 
+    def deleteOldBids(self):
+        for i in self.bidList:
+            if not self.checkTargetMember(i.targetNode):
+                self.bidList.remove(i)
+
+    def checkTargetMember(self, tg):
+        for i in self.targets:
+            if tg == i:
+                return True
+            else:
+                return False
 
     def computeNearTargetPath(self):
+        self.winnerComputed = False
         self.constructTree()
         print("I am agent ", self.unique_id, "and my path is", self.path.printPath())
         if self.bid == None:
@@ -37,11 +61,14 @@ class RoutingAgent(Agent):
             self.broadCastBid()
             if len(self.bidList) == len(self.otherRobots):
                 self.computeRoundWinner()
+        else:
+            print("I am agent ", self.unique_id, "and my Bid is", self.bid.toString())
 
     def broadCastBid(self):
         for i in self.otherRobots:
-            print("I am robot", self.unique_id, "Sending Bid to ", i.unique_id, "BID:", self.bid.toString())
-            i.receiveBid(self.bid)
+            if not self.bid == None:
+                print("I am robot", self.unique_id, "Sending Bid to ", i.unique_id, "BID:", self.bid.toString())
+                i.receiveBid(self.bid)
 
 
     def receiveBid(self, bid):
@@ -49,35 +76,57 @@ class RoutingAgent(Agent):
         if not self.bid == None:
             print("I am robot", self.unique_id, "receiving Bid from ", bid.bidder.unique_id, "BID:", bid.toString())
             if len(self.bidList) == len(self.otherRobots):
-                print("I am robot", self.unique_id, "ready to compute the winner ")
+                print("I am robot", self.unique_id, "ready to compute the winner ", "my bidlist is:", self.bidList)
                 self.computeRoundWinner()
 
 
     def computeRoundWinner(self):
-        winningBid = 100000000
-        winningAgent = None
-        self.bidList.append(self.bid)
-        for i in self.bidList:
-            if i.value < winningBid:
-                winningBid = i.value
-                winningAgent = i.bidder
-        print("I am robot", self.unique_id, "Winner bid: ", winningBid, "Winner agent:", winningAgent.unique_id)
-        self.bidList.clear()
+        if not self.winnerComputed:
+            winningBid = 100000000
+            winningAgent = None
+            self.bidList.append(self.bid)
+            for i in self.bidList:
+                if i.value < winningBid:
+                    winningBid = i.value
+                    winningAgent = i.bidder
+            print("I am robot", self.unique_id, "Winner bid: ", winningBid, "Winner agent:", winningAgent.unique_id)
+            self.winnerComputed = True
+            self.updateWinner(winningAgent)
+            self.bidList.clear()
+            self.checkWin(winningAgent)
+
+    def checkWin(self, winningAgent):
         if self == winningAgent:
-            #print("WINNING AGENT:", winningAgent)
+            print("WINNING AGENT:", winningAgent)
             self.updateAllocation()
             x = self.bid.targetNode.xCoord
             y = self.bid.targetNode.yCoord
-            self.signTarget(x,y)
-            self.sendUpdateMap(x,y)
+            self.bid = None
+            self.signTarget(x, y)
+            self.sendUpdateMap(x, y)
             drawer = Drawer(self.model.schedule.agents)
             drawer.printMap(self.mapChar)
         else:
+            self.printState()
+            print("")
             self.deletePath()
+
+    def updateWinner(self, winningAgent):
+        for i in self.otherRobots:
+            print("I am robot", self.unique_id, "I am sending the winner! ", winningAgent.unique_id, "To agent", i.unique_id)
+            i.receiveWinner(winningAgent)
+
+    def receiveWinner(self,winningAgent):
+        self.winnerComputed = True
+        self.checkWin(winningAgent)
+
 
 
     def deletePath(self):
-        self.path.path[self.path.trackCounter].clear()
+        if self.toDelete:
+            print("I am robot ", self.unique_id, "And i am deleting my path", self.path.path)
+            self.path.path.pop(-1)
+        self.toDelete = False
 
     def sendUpdateMap(self, x, y):
         for i in self.otherRobots:

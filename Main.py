@@ -5,10 +5,10 @@ def startRouting(path):
     mapp = MapHandler(path)
     mapp.readMap()
     auction = Auction(path)
-    for i in range(len(mapp.targetPos)-2):
+    for i in range(len(mapp.targetPos) +1):
         print(i,"^ STEP////////////////////////////////////////////")
         auction.step()
         print("END", i, "^ STEP//////////////////////////////////////////")
 
 
-startRouting("MapEasy")
+startRouting("Map2.txt")
