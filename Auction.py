@@ -1,6 +1,9 @@
 from colorama import Fore
 from mesa import Model
 from mesa.time import RandomActivation
+
+from MiniAveAgent import MiniAveRoutingAgent
+from MiniMaxAgent import MiniMaxRoutingAgent
 from RoutingAgent import RoutingAgent
 from Drawer import Drawer
 from MapHandler import *
@@ -33,7 +36,7 @@ class Auction(Model):
     def createAgents(self, robPos, tarPos, mapChar):
         for i in range(len(robPos)):
             agentNode = Node(father=None, xCoord=robPos[i][0], yCoord=robPos[i][1], value="R")
-            a = MiniSumRoutingAgent(i,self,len(robPos), robPos[i], tarPos, agentNode, mapChar)
+            a = MiniMaxRoutingAgent(i,self,len(robPos), robPos[i], tarPos, agentNode, mapChar)
             self.schedule.add(a)
         for i in self.schedule.agents:
             i.otherRobots = self.getOtherRobots(i)
