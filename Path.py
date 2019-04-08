@@ -8,6 +8,8 @@ class Path():
     def printPath(self):
         str = []
         for i in self.path: # for all tracks
+            str.append("[")
             for j in i:
                 str.append(("Node:", j.xCoord,j.yCoord))
+            str.append("]")
         return str

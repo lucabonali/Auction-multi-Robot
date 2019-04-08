@@ -1,3 +1,9 @@
+import random
+
+from Cluster import Cluster
+from Target import Target
+from TargetClustering import TargetClustering
+
 
 class MapHandler():
 
@@ -21,3 +27,9 @@ class MapHandler():
                     self.robotPos.append((i,j))
                 if self.map[i][j] == "T":
                     self.targetPos.append((i,j))
+
+
+
+
+
+

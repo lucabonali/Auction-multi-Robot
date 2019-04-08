@@ -3,16 +3,6 @@ import time
 from MapHandler import *
 from Auction import Auction
 
-
-def startAuction(auction, mapp):
-    for i in range(len(mapp.targetPos)):
-        print("\n\n", i, "^ STEP////////////////////////////////////////////\n\n")
-        auction.step()
-        for j in auction.schedule.agents:
-            j.resetState()
-
-
-
 def computeTotalCost(agents):
     cost = 0
     for i in agents:
@@ -90,21 +80,27 @@ def move(mapp, agents):
         time.sleep(1.5)
 
 
+def startClusteringRouting(mapp,targetClustering):
+    targetClustering.step()
+    targetClustering.step()
+    targetClustering.step()
+    targetClustering.step()
+
 def startRouting(path):
     mapp = MapHandler(path)
     mapp.readMap()
-    auction = Auction(mapp)
-    startAuction(auction, mapp)
-    agents = auction.schedule.agents
-    computeTotalCost(agents)
-    computeMaxPathCost(agents)
+    targetClustering = TargetClustering(mapp.map, mapp.targetPos)
+    agents = targetClustering.agents
+    startClusteringRouting(mapp, targetClustering)
+    #computeTotalCost(agents)
+    #computeMaxPathCost(agents)
     #computeCumulativeAverageTargetCost(auction.schedule.agents,len(mapp.targetPos))
 
 
     print("\n\n\n\n\n\n\n\nAllocation Terminated, start moving along the paths...\n\n\n\n\n\n\n\n\n\n")
-    time.sleep(3)
+    #time.sleep(3)
     print("\n\n\n\n")
-    move(mapp, agents)
+    #move(mapp, agents)
 
 
-startRouting("Map2.txt")
+startRouting("Map2WOR")

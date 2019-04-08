@@ -1,3 +1,5 @@
+from math import sqrt
+
 from mesa import Agent
 from Bid import Bid
 from Drawer import Drawer
@@ -211,7 +213,7 @@ class RoutingAgent(Agent):
     def getNearTarget(self,x,y):
         nearValues = []
         for i in range(len(self.targets)):
-            nearValues.append(abs((self.targets[i][0]-x)+(self.targets[i][1]-y)))
+            nearValues.append(sqrt((self.targets[i][0]-x)**2+(self.targets[i][1]-y)**2))
         nearValues.sort()
         return nearValues[0]
 
