@@ -93,18 +93,21 @@ def move(mapp, agents):
 def startRouting(path):
     mapp = MapHandler(path)
     mapp.readMap()
-    auction = Auction(mapp)
+    auction = Auction(mapp, "s")
     startAuction(auction, mapp)
     agents = auction.schedule.agents
+    print("\n\n")
+    print("NUMBER OF ROBOTS: ",len(agents), "NUMBER OF TARGETS:", len(mapp.targetPos))
     computeTotalCost(agents)
     computeMaxPathCost(agents)
-    #computeCumulativeAverageTargetCost(auction.schedule.agents,len(mapp.targetPos))
-
 
     print("\n\n\n\n\n\n\n\nAllocation Terminated, start moving along the paths...\n\n\n\n\n\n\n\n\n\n")
     time.sleep(3)
     print("\n\n\n\n")
-    move(mapp, agents)
+    #move(mapp, agents)
 
 
-startRouting("Map2.txt")
+#startRouting("Maps/Map.txt")
+#startRouting("Maps/MapClusterExample")
+startRouting("Maps/Map2WOR")
+

@@ -1,7 +1,7 @@
 import time
 
+from Clustering.TargetClustering import TargetClustering
 from MapHandler import *
-from Auction import Auction
 
 def computeTotalCost(agents):
     cost = 0
@@ -103,4 +103,4 @@ def startRouting(path):
     #move(mapp, agents)
 
 
-startRouting("Map2WOR")
+startRouting("MapEasyWOR")

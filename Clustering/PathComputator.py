@@ -1,43 +1,31 @@
 from math import sqrt
 
-from mesa import Agent
-
 from Node import Node
 from Path import Path
-from Target import Target
 
 
-class ClusteringAgent(Agent):
-
-    def __init__(self, unique_id, model, targets, agentNode, mapChar):
-        super().__init__(unique_id, model)
-        self.unique_id = unique_id
+class PathComputator():
+    def __init__(self, node, mapchar, targets, minThreshold):
+        self.node = node
+        self.mapChar = mapchar
+        self.objNode = None
+        self.minThreshold = minThreshold
         self.targetString = "T"
         self.wallString = "#"
         self.toExpand = []
-        self.targets = targets
         self.path = Path()
-        self.agentNode = agentNode
-        self.mapChar = mapChar
-        self.objNode = None
+        self.targets = targets
 
-    def step(self):
-        if not len(self.targets) == 0:
-            self.constructTree()
-            agentNode = self.objNode
-            self.agentNode = agentNode
-            self.mapChar[agentNode.xCoord][agentNode.yCoord] = "t"
-            print("I am ", self.unique_id, "i am deleting:", self.targets)
-            self.removeTarget(self.objNode.xCoord, self.objNode.yCoord)
-            print("I am ", self.unique_id, "My list is now:", self.targets)
-        else:
-            pass
+
 
     def constructTree(self):
         listPosition = self.getListOfPosition(self.mapChar)
-        self.toExpand.append(self.agentNode)
-        self.setHeuristic(self.agentNode)
-        self.expand(self.agentNode, listPosition, self.mapChar,0)
+        for i in self.mapChar:
+            print("".join(i))
+        self.toExpand.append(self.node)
+
+        self.setHeuristic(self.node)
+        self.expand(self.node, listPosition, self.mapChar, 0)
         self.path.path.append(self.constructPath(self.objNode, []))
         self.path.path[self.path.trackCounter].reverse()
         self.toExpand.clear()
@@ -50,7 +38,7 @@ class ClusteringAgent(Agent):
         return list
 
     def expand(self, node, listPosition, mapChar, rec):
-        if not rec >= 500:
+        if not rec >= 1000:
             self.toExpand.remove(node)
             for i in range(len(node.adjacents)):
                 xCoord = node.adjacents[i][0]
@@ -67,10 +55,13 @@ class ClusteringAgent(Agent):
                         pass
             for i in range(len(node.children)):
                 if self.checkTarget(node.children[i]):
+                    print("TARGET FOUND:", node.children[i].xCoord, node.children[i].yCoord)
                     self.toExpand.clear()
                     self.objNode = node.children[i]
             if not len(self.toExpand) == 0:
                 self.expand(self.toExpand[0], listPosition, mapChar, rec+1)
+        else:
+            print("Max REC DEPTH")
 
     def available(self, listPosition, coord):
         for i in range(len(listPosition)):
@@ -110,7 +101,4 @@ class ClusteringAgent(Agent):
                 return
         self.toExpand.append(child)
 
-    def removeTarget(self, xCoord, yCoord):
-        for i in self.targets:
-            if i.x == xCoord and i.y == yCoord:
-                self.targets.remove(i)
+

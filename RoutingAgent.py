@@ -1,11 +1,9 @@
 from math import sqrt
 
 from mesa import Agent
-from Bid import Bid
 from Drawer import Drawer
 from Node import *
 from Path import *
-import threading
 
 
 class RoutingAgent(Agent):
@@ -152,7 +150,7 @@ class RoutingAgent(Agent):
         listPosition = self.getListOfPosition(self.mapChar)
         self.toExpand.append(self.agentNode)
         self.setHeuristic(self.agentNode)
-        self.expand(self.agentNode, listPosition, self.mapChar)
+        self.expand(self.agentNode, listPosition, self.mapChar,0)
         self.path.path.append(self.constructPath(self.objNode,[]))
         self.path.path[self.path.trackCounter].reverse()
         self.toExpand.clear()
@@ -165,27 +163,28 @@ class RoutingAgent(Agent):
                 list.append((i, j))
         return list
 
-    def expand(self, node, listPosition, mapChar):
-        self.toExpand.remove(node)
-        for i in range(len(node.adjacents)):
-            xCoord = node.adjacents[i][0]
-            yCoord = node.adjacents[i][1]
-            if self.available(listPosition, coord=(xCoord,yCoord)):
-                try:
-                    value = mapChar[xCoord][yCoord]
-                    if not value == self.wallString:
-                        child = Node(father=node, xCoord=xCoord, yCoord=yCoord, value=value)
-                        node.addChildren(child)
-                        self.setHeuristic(child)
-                        self.updateFrontier(child)
-                except:
-                    pass
-        for i in range(len(node.children)):
-            if self.checkTarget(node.children[i]):
-                self.toExpand.clear()
-                self.objNode = node.children[i]
-        if not len(self.toExpand) == 0:
-            self.expand(self.toExpand[0], listPosition, mapChar)
+    def expand(self, node, listPosition, mapChar,rec):
+        if rec < 900:
+            self.toExpand.remove(node)
+            for i in range(len(node.adjacents)):
+                xCoord = node.adjacents[i][0]
+                yCoord = node.adjacents[i][1]
+                if self.available(listPosition, coord=(xCoord,yCoord)):
+                    try:
+                        value = mapChar[xCoord][yCoord]
+                        if not value == self.wallString:
+                            child = Node(father=node, xCoord=xCoord, yCoord=yCoord, value=value)
+                            node.addChildren(child)
+                            self.setHeuristic(child)
+                            self.updateFrontier(child)
+                    except:
+                        pass
+            for i in range(len(node.children)):
+                if self.checkTarget(node.children[i]):
+                    self.toExpand.clear()
+                    self.objNode = node.children[i]
+            if not len(self.toExpand) == 0:
+                self.expand(self.toExpand[0], listPosition, mapChar, rec+1)
 
     def available(self,listPosition, coord):
         for i in range(len(listPosition)):

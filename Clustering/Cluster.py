@@ -1,26 +1,23 @@
 from math import sqrt
 
+from Node import Node
+from Clustering.PathComputator import PathComputator
+
 
 class Cluster():
-    def __init__(self, targets, minThreshold):
+    def __init__(self, targets, mapchar, minThreshold):
         self.targets = targets
+        self.mapChar = mapchar
         self.clusters = []
         self.minThreshold = minThreshold
 
     def calculateDistances(self):
-        others = self.targets
         for i in self.targets:
             for j in self.targets:
                 i.distances.append((j,self.calcDistance(i,j)))
 
     def calcDistance(self, i, j):
-        airDistance = int(sqrt((i.x-j.x)**2+(i.y-j.y)**2))
-        actualPath = self.calculatePath(i,j)
-        #if  actualPath == airDistance:
-        #    return airDistance
-        return airDistance
-    def calculatePath(self,i , j):
-        return 0
+        return int(sqrt((i.x-j.x)**2+(i.y-j.y)**2))
 
     def formClusters(self):
         cont = 0

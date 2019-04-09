@@ -1,8 +1,6 @@
 import random
 
-from Cluster import Cluster
-from Target import Target
-from TargetClustering import TargetClustering
+from Clustering.TargetClustering import TargetClustering
 
 
 class MapHandler():
@@ -27,9 +25,31 @@ class MapHandler():
                     self.robotPos.append((i,j))
                 if self.map[i][j] == "T":
                     self.targetPos.append((i,j))
+        if len(self.robotPos) == 0:
+            self.positionRobotInMap()
 
 
+    def positionRobotInMap(self):
+        targetClustering = TargetClustering(self.map, self.targetPos)
+        self.map = targetClustering.map
+        self.robotPos = targetClustering.robotPos
 
+
+    def getRandomPosition(self, nRobots):
+        robotRandomPos = []
+        for i in range(nRobots):
+            newPos = self.getPos(robotRandomPos)
+            robotRandomPos.append(newPos)
+        return robotRandomPos
+
+    def getPos(self, robotPos):
+        xRandCoord = random.randint(1, len(self.map) - 1)
+        yRandCoord = random.randint(1, len(self.map[0]) - 1)
+        newPos = (xRandCoord, yRandCoord)
+        if not (newPos in self.robotPos and (not self.map[newPos[0]][newPos[1]] == "#") and (
+        not self.map[newPos[0]][newPos[1]] == "T")):
+            return newPos
+        return self.getPos(robotPos)
 
 
 
